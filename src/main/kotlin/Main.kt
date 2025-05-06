@@ -8,18 +8,24 @@ import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 fun main() {
+    val targetMac: String = System.getenv("TARGET_MAC")
+    val targetIp: String = System.getenv("TARGET_IP")
+    val serverIp: String = System.getenv("SERVER_IP")
+    val serverPort: Int = System.getenv("SERVER_PORT").toInt()
+    val sshUser: String = System.getenv("SSH_USER")
+    val sshPassword: String = System.getenv("SSH_PASSWORD")
+
+
     val app = Javalin.create()
 
     app.get("/wol") {
-        magicPacket("")
-        it.result("Hello World")
+        magicPacket(targetMac)
+        it.result("Sent")
     }
 
     app.get("/status") {
-        val isPowered = InetAddress.getByName("").isReachable(100)
+        val isPowered = InetAddress.getByName(targetIp).isReachable(100)
         if (isPowered) {
             it.result("Powered")
         } else {
@@ -31,13 +37,12 @@ fun main() {
         val ssh = SSHClient()
         try {
             ssh.addHostKeyVerifier(PromiscuousVerifier())
-            ssh.connect("")
-            ssh.authPassword("", "")
+            ssh.connect(targetIp)
+            ssh.authPassword(sshUser, sshPassword)
 
             val session: Session = ssh.startSession()
             session.use {
                 val cmd = it.exec("sudo shutdown")
-                println(cmd.inputStream.bufferedReader().readText())
             }
 
             it.result("Success")
@@ -48,10 +53,10 @@ fun main() {
         }
     }
 
-    app.start(8080)
+    app.start(serverIp, serverPort)
 }
 
-fun magicPacket(mac: String, ip: String = "255.255.255.255", PORT: Int = 9) {
+fun magicPacket(mac: String, ip: String = "255.255.255.255", port: Int = 9) {
     val packet = buildPacket(mac)
     val datagramSocket = DatagramSocket()
     try {
@@ -60,7 +65,7 @@ fun magicPacket(mac: String, ip: String = "255.255.255.255", PORT: Int = 9) {
                 packet,
                 packet.size,
                 InetAddress.getByName(ip),
-                PORT
+                port
             )
         )
         datagramSocket.close()
