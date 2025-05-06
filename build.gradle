@@ -1,0 +1,23 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "2.1.20"
+}
+
+group = "ua.pp.lumivoid"
+version = "1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "io.javalin:javalin:6.6.0"
+    implementation "org.slf4j:slf4j-simple:2.0.16"
+    implementation "com.hierynomus:sshj:0.38.0"
+}
+
+test {
+    useJUnitPlatform()
+}
+kotlin {
+    jvmToolchain(21)
+}
