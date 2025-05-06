@@ -11,3 +11,4 @@ services:
       SSH_USER: "user"
       SSH_PASSWORD: "password"
     network_mode: "host"
+    restart: unless-stopped
