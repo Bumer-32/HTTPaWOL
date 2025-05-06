@@ -1,0 +1,15 @@
+services:
+  http_wol:
+    image: test
+    container_name: http_wol
+
+    build: .
+
+    environment:
+      TARGET_MAC: "00:11:22:33:44:55"
+      TARGET_IP: "192.168.0.100"
+      SERVER_IP: 0.0.0.0
+      SERVER_PORT: 8000
+      SSH_USER: "user"
+      SSH_PASSWORD: "password"
+    network_mode: "host"

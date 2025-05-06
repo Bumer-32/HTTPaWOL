@@ -4,11 +4,14 @@ import io.javalin.Javalin
 import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.connection.channel.direct.Session
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier
+import org.slf4j.LoggerFactory
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
 
-fun main() {
+fun main(args: Array<String>) {
+    val logger = LoggerFactory.getLogger("Main")
+
     val targetMac: String = System.getenv("TARGET_MAC")
     val targetIp: String = System.getenv("TARGET_IP")
     val serverIp: String = System.getenv("SERVER_IP")
@@ -20,11 +23,13 @@ fun main() {
     val app = Javalin.create()
 
     app.get("/wol") {
-        magicPacket(targetMac)
+        logger.info("WOL to $targetMac $targetIp")
+        magicPacket(targetMac, targetIp)
         it.result("Sent")
     }
 
     app.get("/status") {
+        logger.info("Status")
         val isPowered = InetAddress.getByName(targetIp).isReachable(100)
         if (isPowered) {
             it.result("Powered")
@@ -34,6 +39,7 @@ fun main() {
     }
 
     app.get("/shutdown") {
+        logger.info("Shutting down")
         val ssh = SSHClient()
         try {
             ssh.addHostKeyVerifier(PromiscuousVerifier())

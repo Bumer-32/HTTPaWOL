@@ -1,9 +1,10 @@
 plugins {
     id "org.jetbrains.kotlin.jvm" version "2.1.20"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
 group = "ua.pp.lumivoid"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -15,9 +16,18 @@ dependencies {
     implementation "com.hierynomus:sshj:0.38.0"
 }
 
-test {
-    useJUnitPlatform()
-}
 kotlin {
     jvmToolchain(21)
+}
+
+tasks.jar {
+    manifest {
+        attributes "Main-Class": "ua.pp.lumivoid.MainKt"
+    }
+}
+
+shadowJar {
+    archiveBaseName.set("HTTPaWOL")
+    archiveVersion.set(version)
+    archiveClassifier.set("all")
 }
