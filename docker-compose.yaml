@@ -1,9 +1,7 @@
 services:
-  http_wol:
-    image: test
-    container_name: http_wol
-
-    build: .
+  http_a_wol:
+    image: bumer32/http_a_wol
+    container_name: http_a_wol
 
     environment:
       TARGET_MAC: "00:11:22:33:44:55"
